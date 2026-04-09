@@ -1,0 +1,25 @@
+name: Automação Semanal Staging
+
+on:
+  schedule:
+    - cron: '0 0 * * 1' # Toda segunda à meia-noite
+  workflow_dispatch:   # Botão para você testar agora
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Reset Staging de Master
+        run: |
+          git config user.name "Github Action"
+          git config user.email "action@github.com"
+          
+          # Garante que a staging seja deletada e recriada da master
+          git push origin --delete staging || echo "Branch staging inexistente"
+          git checkout -b staging origin/main
+          git push origin staging

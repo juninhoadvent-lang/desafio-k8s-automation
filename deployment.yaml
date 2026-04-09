@@ -1,0 +1,22 @@
+  key: frontend_url
+        - name: CLM_NEW_ORG_URL
+          valueFrom:
+            configMapKeyRef:
+              name: checkout-prd-checkout-api-configmap
+              key: clm_new_org_url
+        - name: CLM_NEW_ORG_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: checkout-prd-checkout-api-secrets
+              key: clm_new_org_token
+        - name: CUSTOMERX_API_TOKEN # Nome que a aplicação vai ler internamente
+          valueFrom:
+            secretKeyRef:
+              name: checkout-prd-checkout-api-secrets # Nome do cofre (Secret)
+              key: customerx_api_token               # Nome da chave que criamos no Passo 2
+
+        - name: CUSTOMERX_API_BASE
+          valueFrom:
+            secretKeyRef:
+              name: checkout-prd-checkout-api-secrets
+              key: customerx_api_base
