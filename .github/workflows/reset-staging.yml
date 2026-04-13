@@ -1,4 +1,4 @@
-name: Reset Staging Weekly
+name: sync-branches
 
 on:
   schedule:
