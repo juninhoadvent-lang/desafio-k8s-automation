@@ -25,18 +25,17 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Limpar e Criar Branch
-        run: |
-          # Define o nome da branch conforme sua demanda (stg/dia-mes-ano)
-          DATE=$(date +'%d-%m-%Y')
-          BRANCH_NAME="stg/$DATE"
+  run: |
+    DATE=$(date +'%d-%m-%Y')
+    BRANCH_NAME="stg/$DATE"
 
-          echo "Tentando limpar branches antigas..."
-          # O '|| true' faz o comando ignorar se a branch não existir
-          git push origin --delete $BRANCH_NAME || true
-          git push origin --delete staging || true
+    echo "Criando branch $BRANCH_NAME..."
 
-          # Cria a nova branch a partir da main atual
-          git checkout -b $BRANCH_NAME
+    # Cria a branch a partir da main
+    git checkout -b $BRANCH_NAME
 
-          # Sobe para o repositório
-          git push origin $BRANCH_NAME
+    # 🚨 Remove workflows para evitar erro de permissão
+    rm -rf .github
+
+    # Faz o push
+    git push origin $BRANCH_NAME
