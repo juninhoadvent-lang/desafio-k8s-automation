@@ -9,16 +9,37 @@ jobs:
   sync-branches:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      steps:
+      - name: Checkout Master
         uses: actions/checkout@v4
         with:
+          ref: master
           fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Limpar e Criar Staging Branch
+        run: |
+          # Define a data e o nome da branch
+          DATA=$(date +'%d-%m-%Y')
+          BRANCH_NAME="stg/$DATA"
+          # Se a branch já existir no remoto, ela é apagada
+          if git ls-remote --exit-code --heads origin $BRANCH_NAME; then
+            echo "Branch $BRANCH_NAME já existe. Deletando para resetar..."
+            git push origin --delete $BRANCH_NAME
+          fi
+          # Cria a branch localmente e envia ao GitHub
+          git checkout -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
 
       - name: Reset Staging de Master
         run: |
           git config user.name "Github Action"
           git config user.email "action@github.com"
-          
+
           # Garante que a staging seja deletada e recriada da master
           git push origin --delete staging || echo "Branch staging inexistente"
           git checkout -b staging origin/main
