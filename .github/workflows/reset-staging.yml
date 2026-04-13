@@ -26,20 +26,17 @@ jobs:
 
       - name: Limpar e Criar Branch
         run: |
-          # Define o nome da branch com a data de hoje
+          # Define o nome da branch conforme sua demanda (stg/dia-mes-ano)
           DATE=$(date +'%d-%m-%Y')
           BRANCH_NAME="stg/$DATE"
 
-          echo "Limpando ambiente para a branch: $BRANCH_NAME"
-
-          # Tenta deletar a branch no remoto. 
-          # O "|| true" garante que se a branch não existir, o script NÃO pare com erro.
+          echo "Tentando limpar branches antigas..."
+          # O '|| true' faz o comando ignorar se a branch não existir
           git push origin --delete $BRANCH_NAME || true
-
-          # Também tenta deletar a branch 'staging' genérica se você a estiver usando
           git push origin --delete staging || true
 
-          # Cria a nova branch localmente a partir da main
+          # Cria a nova branch a partir da main atual
           git checkout -b $BRANCH_NAME
-          # Sobe para o GitHub
+
+          # Sobe para o repositório
           git push origin $BRANCH_NAME
