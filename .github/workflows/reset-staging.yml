@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write      # <--- ESSENCIAL: Resolve o erro 403
+  workflows: write
 
 jobs:
   reset-staging:
