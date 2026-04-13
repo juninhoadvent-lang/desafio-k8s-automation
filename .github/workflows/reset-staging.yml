@@ -33,7 +33,7 @@ jobs:
           # Se a branch já existir no remoto, ela é apagada
           if git ls-remote --exit-code --heads origin $BRANCH_NAME; then
             echo "Branch $BRANCH_NAME já existe. Deletando para resetar..."
-            git push origin --delete $BRANCH_NAME
+            git push origin --delete $BRANCH_NAME || true
           fi
           # Cria a branch localmente e envia ao GitHub
           git checkout -b $BRANCH_NAME
