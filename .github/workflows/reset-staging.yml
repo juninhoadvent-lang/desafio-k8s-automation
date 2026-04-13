@@ -5,15 +5,18 @@ on:
     - cron: '0 0 * * 1' # Toda segunda à meia-noite
   workflow_dispatch:   # Botão para você testar agora
 
+permissions:
+  contents: write      # <--- ESSENCIAL: Resolve o erro 403
+
 jobs:
-  sync-branches:
+  reset-staging:
     runs-on: ubuntu-latest
     steps:
       steps:
-      - name: Checkout Master
+      - name: Checkout Código
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: main
           fetch-depth: 0
 
       - name: Setup Git
@@ -35,7 +38,7 @@ jobs:
           git checkout -b $BRANCH_NAME
           git push origin $BRANCH_NAME
 
-      - name: Reset Staging de Master
+      - name: Reset Staging de Main
         run: |
           git config user.name "Github Action"
           git config user.email "action@github.com"
