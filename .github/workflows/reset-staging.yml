@@ -1,50 +1,45 @@
-name: Automação Semanal Staging
+name: Reset Staging Weekly
 
 on:
   schedule:
-    - cron: '0 0 * * 1' # Toda segunda à meia-noite
-  workflow_dispatch:   # Botão para você testar agora
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
 
 permissions:
-  contents: write      # <--- ESSENCIAL: Resolve o erro 403
-  workflows: write
+  contents: write
+  workflows: write    # <--- ESSENCIAL: Permite criar branches com workflows
 
 jobs:
   reset-staging:
     runs-on: ubuntu-latest
     steps:
-      steps:
       - name: Checkout Código
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: main # Garante que estamos na main/master
           fetch-depth: 0
 
-      - name: Setup Git
+      - name: Configurar Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Limpar e Criar Staging Branch
+      - name: Limpar e Criar Branch
         run: |
-          # Define a data e o nome da branch
-          DATA=$(date +'%d-%m-%Y')
-          BRANCH_NAME="stg/$DATA"
-          # Se a branch já existir no remoto, ela é apagada
-          if git ls-remote --exit-code --heads origin $BRANCH_NAME; then
-            echo "Branch $BRANCH_NAME já existe. Deletando para resetar..."
-            git push origin --delete $BRANCH_NAME || true
-          fi
-          # Cria a branch localmente e envia ao GitHub
+          # Define o nome da branch com a data de hoje
+          DATE=$(date +'%d-%m-%Y')
+          BRANCH_NAME="stg/$DATE"
+
+          echo "Limpando ambiente para a branch: $BRANCH_NAME"
+
+          # Tenta deletar a branch no remoto. 
+          # O "|| true" garante que se a branch não existir, o script NÃO pare com erro.
+          git push origin --delete $BRANCH_NAME || true
+
+          # Também tenta deletar a branch 'staging' genérica se você a estiver usando
+          git push origin --delete staging || true
+
+          # Cria a nova branch localmente a partir da main
           git checkout -b $BRANCH_NAME
+          # Sobe para o GitHub
           git push origin $BRANCH_NAME
-
-      - name: Reset Staging de Main
-        run: |
-          git config user.name "Github Action"
-          git config user.email "action@github.com"
-
-          # Garante que a staging seja deletada e recriada da master
-          git push origin --delete staging || echo "Branch staging inexistente"
-          git checkout -b staging origin/main
-          git push origin staging
